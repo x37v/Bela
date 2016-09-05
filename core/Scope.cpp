@@ -110,7 +110,7 @@ void Scope::start(bool setup /* = false */ ){
 void Scope::stop(){
     started = false;
 }
-
+static float* frameFindexExp = NULL;
 void Scope::setPlotMode(){
 // printf("running setPlotMode\n");
     if (settingUp) return;
@@ -125,6 +125,15 @@ void Scope::setPlotMode(){
     
     // setup the input buffer
     frameWidth = pixelWidth/upSampling;
+	free(frameFindexExp);
+	frameFindexExp = (float*)malloc(sizeof(*frameFindexExp) * frameWidth);
+#define OPT_FINDEX
+#ifdef OPT_FINDEX
+    float logConst = -logf(1.0f/(float)frameWidth)/(float)frameWidth;
+	for(unsigned int i = 0; i < frameWidth; ++i){
+		frameFindexExp[i] = expf((float)i*logConst);
+	}
+#endif
 	if(plotMode == 0 ) { // time domain 
 		// let's keep 4 buffers for a greater x-offset range
 		channelWidth = frameWidth * 4;
@@ -399,7 +408,6 @@ void Scope::doFFT(){
     int ptr = readPointer-FFTLength+channelWidth;
     float ratio = (float)(FFTLength/2)/(frameWidth*downSampling);
     float logConst = -logf(1.0f/(float)frameWidth)/(float)frameWidth;
-    
     for (int c=0; c<numChannels; c++){
     
         // prepare the FFT input & do windowing
@@ -410,17 +418,28 @@ void Scope::doFFT(){
         
         // do the FFT
         ne10_fft_c2c_1d_float32_neon (outFFT, inFFT, cfg, 0);
+#define OPT_MAG
+#ifdef OPT_MAG
+		// in-place element-wise multiplication:
+		// replace the real/imag parts with their square
+		ne10_float32_t* srcdst = (ne10_float32_t*)outFFT;
+		ne10_mul_float_neon(srcdst, srcdst, srcdst, FFTLength * 2);
+#endif
         
         if (ratio < 1.0f){
         
             // take the magnitude of the complex FFT output, scale it and interpolate
             for (int i=0; i<frameWidth; i++){
                 
-                float findex = 0.0f;
+                float findex;
                 if (FFTXAxis == 0){  // linear
                     findex = (float)i*ratio;
-                } else if (FFTXAxis == 1){  // logarithmic
+                } else {  // (FFTXAxis == 1)logarithmic
+#ifdef OPT_FINDEX
+                    findex =frameFindexExp[i] * ratio;
+#else
                     findex = expf((float)i*logConst)*ratio;
+#endif
                 }
                 
                 int index = (int)(findex);
@@ -428,7 +447,11 @@ void Scope::doFFT(){
                 
 				float yAxis[2];
 				for(unsigned int n = 0; n < 2; ++n){
+#ifdef OPT_MAG
+					float magSquared = outFFT[index + n].r  + outFFT[index + n].i;
+#else
 					float magSquared = outFFT[index + n].r * outFFT[index + n].r + outFFT[index + n].i * outFFT[index + n].i;
+#endif
 					if (FFTYAxis == 0){ // normalised linear magnitude
 						yAxis[n] = FFTScale * sqrtf(magSquared);
 					} else { // Otherwise it is going to be (FFTYAxis == 1): decibels
