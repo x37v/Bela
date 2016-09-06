@@ -9,7 +9,16 @@ Scope::Scope(): isUsingOutBuffer(false),
                 downSampling(1), 
                 triggerPrimed(false), 
                 started(false), 
-                settingUp(true) {}
+                settingUp(true),
+				inFFT(NULL),
+				outFFT(NULL)
+				{}
+
+Scope::~Scope(){
+	NE10_FREE(inFFT);
+	NE10_FREE(outFFT);
+	NE10_FREE(cfg);
+}
 
 // static aux task functions
 void Scope::triggerTask(void *ptr){
@@ -127,8 +136,10 @@ void Scope::setPlotMode(){
     frameWidth = pixelWidth/upSampling;
 	free(frameFindexExp);
 	frameFindexExp = (float*)malloc(sizeof(*frameFindexExp) * frameWidth);
-#define OPT_FINDEX
 #ifdef OPT_FINDEX
+//cache values used for the logaritmic x-axis
+//TODO: can probably be moved somewhere else, where the 
+//x-axis is toggled
     float logConst = -logf(1.0f/(float)frameWidth)/(float)frameWidth;
 	for(unsigned int i = 0; i < frameWidth; ++i){
 		frameFindexExp[i] = expf((float)i*logConst);
@@ -156,9 +167,20 @@ void Scope::setPlotMode(){
     customTriggered = false;
         
     if (plotMode == 1){ // frequency domain
-		inFFT  = (ne10_fft_cpx_float32_t*) NE10_MALLOC (FFTLength * sizeof (ne10_fft_cpx_float32_t));
-		outFFT = (ne10_fft_cpx_float32_t*) NE10_MALLOC (FFTLength * sizeof (ne10_fft_cpx_float32_t));
+		NE10_FREE(cfg);
+		cfg = NULL;
+		NE10_FREE(outFFT);
+		outFFT = NULL;
+		NE10_FREE(inFFT);
+		inFFT = NULL;
+#ifdef OPT_REAL_ONLY
+		cfg = ne10_fft_alloc_r2c_float32 (FFTLength);
+		inFFT  = (ne10_float32_t*) NE10_MALLOC (FFTLength * sizeof (ne10_float32_t));
+#else
 		cfg = ne10_fft_alloc_c2c_float32_neon (FFTLength);
+		inFFT  = (ne10_fft_cpx_float32_t*) NE10_MALLOC (FFTLength * sizeof (ne10_fft_cpx_float32_t));
+#endif
+		outFFT = (ne10_fft_cpx_float32_t*) NE10_MALLOC (FFTLength * sizeof (ne10_fft_cpx_float32_t));
     	
     	pointerFFT = 0;
         collectingFFT = true;
@@ -409,16 +431,39 @@ void Scope::doFFT(){
     float ratio = (float)(FFTLength/2)/(frameWidth*downSampling);
     float logConst = -logf(1.0f/(float)frameWidth)/(float)frameWidth;
     for (int c=0; c<numChannels; c++){
-    
+#ifdef OPT_REAL_ONLY
+		//we need to read from the ptr to the end of the buffer and then again
+		//from the end of the buffer to the current ptr
+		unsigned int samplesToEndOfBuffer = channelWidth - ptr;
+		unsigned int samplesFromStartOfBuffer = FFTLength - samplesToEndOfBuffer;
+		ne10_float32_t* src1;
+		ne10_float32_t* src2;
+		ne10_float32_t* dst;
+		//we do two vectorized multiplies between the window and the sample buffer
+		//one from ptr to the end of the buffer
+		src1 = (ne10_float32_t*)&buffer[ptr + c * channelWidth];
+		src2 = (ne10_float32_t*)windowFFT;
+		dst = inFFT;
+		ne10_mul_float_neon(dst, src1, src2, samplesToEndOfBuffer);
+		//the other one from the beginning of the buffer for however many samples are left
+		src1 = (ne10_float32_t*)&buffer[0 + c * channelWidth];
+		src2 = (ne10_float32_t*)(windowFFT + samplesToEndOfBuffer);
+		dst = inFFT + samplesToEndOfBuffer;
+		ne10_mul_float_neon(dst, src1, src2, samplesFromStartOfBuffer);
+
+		// do the FFT
+        ne10_fft_r2c_1d_float32_neon(outFFT, inFFT, cfg);
+#else
+		printf("ptr: %d, ptr_end: %d, channelWidth: %d\n", ptr, ptr + FFTLength, channelWidth);
         // prepare the FFT input & do windowing
         for (int i=0; i<FFTLength; i++){
             inFFT[i].r = (ne10_float32_t)(buffer[(ptr+i)%channelWidth+c*channelWidth] * windowFFT[i]);
             inFFT[i].i = 0;
         }
-        
+   
         // do the FFT
         ne10_fft_c2c_1d_float32_neon (outFFT, inFFT, cfg, 0);
-#define OPT_MAG
+#endif
 #ifdef OPT_MAG
 		// in-place element-wise multiplication:
 		// replace the real/imag parts with their square

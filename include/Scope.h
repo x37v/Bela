@@ -1,13 +1,16 @@
 /***** Scope.h *****/
 #ifndef __Scope_H_INCLUDED__
 #define __Scope_H_INCLUDED__ 
-
 #include <OSCServer.h>
 #include <OSCClient.h>
 #include <ne10/NE10.h>
 #include <stdarg.h>
 #include <native/mutex.h>
 #include <native/cond.h>
+
+#define OPT_REAL_ONLY  
+#define OPT_FINDEX
+#define OPT_MAG
 
 #define OSC_RECEIVE_PORT 8675
 #define OSC_SEND_PORT 8676
@@ -26,6 +29,7 @@
 class Scope{
     public:
         Scope();
+        ~Scope();
         
         /**
          * \brief Initialise the scope, setting the number of channels and the sample rate
@@ -182,10 +186,14 @@ class Scope{
         float *windowFFT;
         int FFTXAxis;
         int FFTYAxis;
-        
+#ifdef OPT_REAL_ONLY
+        ne10_float32_t* inFFT;
+        ne10_fft_r2c_cfg_float32_t cfg;
+#else
         ne10_fft_cpx_float32_t* inFFT;
-    	ne10_fft_cpx_float32_t* outFFT;
         ne10_fft_cfg_float32_t cfg;
+#endif
+    	ne10_fft_cpx_float32_t* outFFT;
         
         // aux tasks
         AuxiliaryTask scopeTriggerTask;
