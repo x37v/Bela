@@ -862,8 +862,8 @@ models.status.on('change', function (data, changedKeys) {
 				console.log('opening project ' + e.state.project + ' file ' + e.state.file);
 				var data = {
 					currentProject: e.state.project,
-					fileName: e.state.file,
-					func: 'openFile',
+					newFile: e.state.file,
+					func: 'openProject',
 					timestamp: performance.now()
 				};
 				consoleView.emit('openNotification', data);
@@ -891,7 +891,7 @@ function parseErrors(data) {
 			for (var j = 0; j < msg.length; j++) {
 
 				var str = msg[j].split(':');
-				//console.log(str);
+				// console.log(str);
 				// str[0] -> file name + path
 				// str[1] -> row number
 				// str[2] -> column number
@@ -921,6 +921,14 @@ function parseErrors(data) {
 						column: str[2],
 						text: '[warning] ' + str.slice(4).join(':').slice(1) + '\ncolumn: ' + str[2],
 						type: "warning"
+					});
+				} else if (str[0] == 'pasm') {
+					errors.push({
+						file: str[1].split(' ')[1].split('(')[0],
+						row: parseInt(str[1].split(' ')[1].split('(')[1].split(')')[0]) - 1,
+						column: '',
+						text: '[pasm] ' + str[2].substring(1),
+						type: "error"
 					});
 				} else {
 					//console.log('rejected error string: '+str);
@@ -1018,7 +1026,7 @@ var Model = function (_EventEmitter) {
 	function Model(data) {
 		_classCallCheck(this, Model);
 
-		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Model).call(this));
+		var _this = _possibleConstructorReturn(this, (Model.__proto__ || Object.getPrototypeOf(Model)).call(this));
 
 		var _data = data || {};
 		_this._getData = function () {
@@ -1131,7 +1139,7 @@ var ConsoleView = function (_View) {
 	function ConsoleView(className, models, settings) {
 		_classCallCheck(this, ConsoleView);
 
-		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ConsoleView).call(this, className, models, settings));
+		var _this = _possibleConstructorReturn(this, (ConsoleView.__proto__ || Object.getPrototypeOf(ConsoleView)).call(this, className, models, settings));
 
 		_this.on('clear', function (force) {
 			return _console.clear(undefined, force);
@@ -1470,7 +1478,7 @@ var DocumentationView = function (_View) {
 	function DocumentationView(className, models) {
 		_classCallCheck(this, DocumentationView);
 
-		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DocumentationView).call(this, className, models));
+		var _this = _possibleConstructorReturn(this, (DocumentationView.__proto__ || Object.getPrototypeOf(DocumentationView)).call(this, className, models));
 
 		_this.on('init', _this.init);
 
@@ -1765,7 +1773,7 @@ var EditorView = function (_View) {
 	function EditorView(className, models) {
 		_classCallCheck(this, EditorView);
 
-		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EditorView).call(this, className, models));
+		var _this = _possibleConstructorReturn(this, (EditorView.__proto__ || Object.getPrototypeOf(EditorView)).call(this, className, models));
 
 		_this.highlights = {};
 
@@ -1845,7 +1853,7 @@ var EditorView = function (_View) {
 		});
 
 		_this.editor.session.on('tokenizerUpdate', function (e) {
-			// console.log('tokenizerUpdate');
+			// console.log('tokenizerUpdate'); 
 			_this.parser.parse(function () {
 				_this.getCurrentWord();
 			});
@@ -2046,7 +2054,7 @@ var EditorView = function (_View) {
 				return;
 			}
 
-			//console.log('clicked', token);
+			//console.log('clicked', token); 
 
 			var markers = this.parser.getMarkers();
 			var _iteratorNormalCompletion = true;
@@ -2123,7 +2131,7 @@ var FileView = function (_View) {
 	function FileView(className, models) {
 		_classCallCheck(this, FileView);
 
-		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FileView).call(this, className, models));
+		var _this = _possibleConstructorReturn(this, (FileView.__proto__ || Object.getPrototypeOf(FileView)).call(this, className, models));
 
 		_this.listOfFiles = [];
 
@@ -2612,7 +2620,7 @@ var GitView = function (_View) {
 	function GitView(className, models, settings) {
 		_classCallCheck(this, GitView);
 
-		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(GitView).call(this, className, models, settings));
+		var _this = _possibleConstructorReturn(this, (GitView.__proto__ || Object.getPrototypeOf(GitView)).call(this, className, models, settings));
 
 		_this.$form = $('#gitForm');
 		_this.$input = $('#gitInput');
@@ -2812,8 +2820,7 @@ var ProjectView = function (_View) {
 		_classCallCheck(this, ProjectView);
 
 		//this.exampleChanged = false;
-
-		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ProjectView).call(this, className, models));
+		var _this = _possibleConstructorReturn(this, (ProjectView.__proto__ || Object.getPrototypeOf(ProjectView)).call(this, className, models));
 
 		_this.on('example-changed', function () {
 			return _this.exampleChanged = true;
@@ -2875,9 +2882,12 @@ var ProjectView = function (_View) {
 			form.push('<input id="popup-PD" type="radio" name="project-type" data-type="PD">');
 			form.push('<label for="popup-PD">Pure Data</label>');
 			form.push('</br>');
+			form.push('<input id="popup-SC" type="radio" name="project-type" data-type="SC">');
+			form.push('<label for="popup-SC">SuperCollider</label>');
+			form.push('</br>');
 			form.push('<input type="text" placeholder="Enter your project name">');
 			form.push('</br>');
-			form.push('<button type="submit" class="button popup-save">Save</button>');
+			form.push('<button type="submit" class="button popup-save">Create</button>');
 			form.push('<button type="button" class="button popup-cancel">Cancel</button>');
 
 			popup.form.append(form.join('')).off('submit').on('submit', function (e) {
@@ -3161,8 +3171,7 @@ var SettingsView = function (_View) {
 		_classCallCheck(this, SettingsView);
 
 		//this.$elements.filter('input').on('change', (e) => this.selectChanged($(e.currentTarget), e));
-
-		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SettingsView).call(this, className, models, settings));
+		var _this = _possibleConstructorReturn(this, (SettingsView.__proto__ || Object.getPrototypeOf(SettingsView)).call(this, className, models, settings));
 
 		_this.settings.on('change', function (data) {
 			return _this._IDESettings(data);
@@ -3539,9 +3548,8 @@ var TabView = function (_View) {
 	function TabView() {
 		_classCallCheck(this, TabView);
 
-		// open/close tabs
-
-		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TabView).call(this, 'tab'));
+		// open/close tabs 
+		var _this = _possibleConstructorReturn(this, (TabView.__proto__ || Object.getPrototypeOf(TabView)).call(this, 'tab'));
 
 		$('#flexit').on('click', function () {
 			if (_tabsOpen) {
@@ -3704,7 +3712,7 @@ var ToolbarView = function (_View) {
 	function ToolbarView(className, models) {
 		_classCallCheck(this, ToolbarView);
 
-		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ToolbarView).call(this, className, models));
+		var _this = _possibleConstructorReturn(this, (ToolbarView.__proto__ || Object.getPrototypeOf(ToolbarView)).call(this, className, models));
 
 		_this.$elements.on('click', function (e) {
 			return _this.buttonClicked($(e.currentTarget), e);
@@ -3811,7 +3819,7 @@ var ToolbarView = function (_View) {
 	}, {
 		key: '__allErrors',
 		value: function __allErrors(errors) {
-			//if (this.syntaxTimeout) clearTimeout(this.syntaxTimeout);
+			//if (this.syntaxTimeout) clearTimeout(this.syntaxTimeout); 
 			if (errors.length) {
 				$('#status').css('background', 'url("images/icons/status_stop.png")').prop('title', 'syntax errors found');
 			} else {
@@ -3918,7 +3926,7 @@ var View = function (_EventEmitter) {
 	function View(CSSClassName, models, settings) {
 		_classCallCheck(this, View);
 
-		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(View).call(this));
+		var _this = _possibleConstructorReturn(this, (View.__proto__ || Object.getPrototypeOf(View)).call(this));
 
 		_this.className = CSSClassName;
 		_this.models = models;
@@ -4060,7 +4068,7 @@ var Console = function (_EventEmitter) {
 	function Console() {
 		_classCallCheck(this, Console);
 
-		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Console).call(this));
+		var _this = _possibleConstructorReturn(this, (Console.__proto__ || Object.getPrototypeOf(Console)).call(this));
 
 		_this.$element = $('#beaglert-consoleWrapper');
 		_this.parent = document.getElementById('beaglert-console');
@@ -4178,17 +4186,26 @@ var Console = function (_EventEmitter) {
 
 					// create the link and add it to the element
 
-					anchor = $('<a></a>').html(err.text + ', line: ' + (err.row + 1)).appendTo(div);
+					span = $('<span></span>').html(err.text.split('\n').join(' ') + ', line: ' + (err.row + 1)).appendTo(div);
+
+					// add a button to copy the contents to the clipboard
+
+					copyButton = $('<div></div>').addClass('clipboardButton').appendTo(div);
+					clipboard = new Clipboard(copyButton[0], {
+						target: function target(trigger) {
+							return $(trigger).siblings('span')[0];
+						}
+					});
 
 
 					div.appendTo(_this2.$element);
 
 					if (err.currentFile) {
-						div.on('click', function () {
+						span.on('click', function () {
 							return _this2.emit('focus', { line: err.row + 1, column: err.column - 1 });
 						});
 					} else {
-						div.on('click', function () {
+						span.on('click', function () {
 							return _this2.emit('open-file', err.file, { line: err.row + 1, column: err.column - 1 });
 						});
 					}
@@ -4196,7 +4213,9 @@ var Console = function (_EventEmitter) {
 
 				for (var _iterator = errors[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 					var div;
-					var anchor;
+					var span;
+					var copyButton;
+					var clipboard;
 
 					_loop();
 				}
@@ -4692,6 +4711,7 @@ var parser = {
 			}
 
 			//}
+
 
 			buf.enq(token);
 			token = iterator.stepForward();
