@@ -264,8 +264,8 @@ function socketEvents(socket){
 						if (key[0] === '-' && key[1] === '-'){
 							args += key+'='+CLArgs[key]+' ';
 						} else if (key === 'user'){
-							args += CLArgs[key];
-						} else if (key !== 'make'){
+							args += CLArgs[key]+' ';
+						} else if (key !== 'make' && key !== 'audioExpander' && CLArgs[key] !== ''){
 							args += key+CLArgs[key]+' ';
 						}
 					}
@@ -407,7 +407,7 @@ function runOnBootProject(){
 			if (lines[5] === '# Run on startup disabled -- nothing to do here'){
 				project = 'none';
 			} else {
-				project = lines[5].trim().split(' ')[1].split('/').pop();
+				project = lines[6].trim().split(' ')[1].split('/').pop();
 			}
 			return project;
 		})
@@ -494,7 +494,10 @@ function uploadUpdate(data){
 				
 			});
 		})
-		.catch( e => console.log('update error', e.toString()) );
+		.catch( e => {
+			console.log('update error', e.toString());
+			allSockets.emit('update-error', e.toString());
+		});
 }
 
 process.on('uncaughtException', (err) => {

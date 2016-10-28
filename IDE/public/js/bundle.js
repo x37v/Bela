@@ -738,7 +738,13 @@ socket.on('syntax-highlighted', function () {
 });
 
 socket.on('force-reload', function () {
-	return window.location.reload(true);
+	return setTimeout(function () {
+		return window.location.reload(true);
+	}, 1000);
+});
+socket.on('update-error', function (err) {
+	popup.overlay();
+	consoleView.emit('warn', 'Error updating the board, please try a different zip archive');
 });
 
 socket.on('mtime', setModifiedTimeInterval);
@@ -3338,7 +3344,7 @@ var SettingsView = function (_View) {
 
 			// build the popup content
 			popup.title('About Bela');
-			popup.subtitle('You are using Bela Version 0.1, July 2016. Bela is an open source project licensed under GPL, and is a product of the Augmented Instruments Laboratory at Queen Mary University of London. For more information, visit http://bela.io');
+			popup.subtitle('You are using Bela Version 0.2, October 2016. Bela is an open source project, and is a product of the Augmented Instruments Laboratory at Queen Mary University of London, and Augmented Instruments Ltd. For more information, visit http://bela.io');
 			var form = [];
 			form.push('<button type="submit" class="button popup-continue">Close</button>');
 
@@ -3389,7 +3395,7 @@ var SettingsView = function (_View) {
 					_this5.emit('warning', 'The browser may become unresponsive and will temporarily disconnect');
 					_this5.emit('warning', 'Do not use the IDE during the update process!');
 
-					popup.overlay();
+					popup.hide('keep overlay');
 
 					var reader = new FileReader();
 					reader.onload = function (ev) {
@@ -3399,9 +3405,8 @@ var SettingsView = function (_View) {
 				} else {
 
 					_this5.emit('warning', 'not a valid update zip archive');
+					popup.hide();
 				}
-
-				popup.hide();
 			});
 
 			popup.find('.popup-cancel').on('click', popup.hide);
@@ -4408,6 +4413,10 @@ var parser = {
 	},
 	highlights: function highlights(hls) {
 		_highlights = hls;
+		if (!hls.contextType || !hls.contextType.length) {
+			console.log('parser aborted');
+			return;
+		}
 		contextType = hls.contextType[0].name;
 		_highlights.typerefs = [];
 		//console.log(highlights);
@@ -4837,8 +4846,8 @@ var popup = {
 		parent.addClass('active');
 		content.find('input[type=text]').first().trigger('focus');
 	},
-	hide: function hide() {
-		_overlay.removeClass('active');
+	hide: function hide(keepOverlay) {
+		if (keepOverlay !== 'keep overlay') _overlay.removeClass('active');
 		parent.removeClass('active');
 		titleEl.empty();
 		subEl.empty();
