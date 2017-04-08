@@ -1,5 +1,18 @@
-#N canvas 142 23 1078 832 10;
-#N canvas 392 117 718 398 patch-editor-do-not-delete 1;
+#N canvas 68 23 1078 832 10;
+#X text 19 676 DO NOT DELETE THESE OBJECTS:;
+#X obj 10 4 cnv 5 5 5 empty empty AUTOMATONISM 0 12 0 15 -262144 -66577
+0;
+#X obj 11 30 bng 15 250 50 0 open-quick-guide! empty <--QUICK-GUIDE
+17 7 0 10 -262144 -1 -1;
+#X obj 11 50 bng 15 250 50 0 open-manual! empty <--MANUAL 17 7 0 10
+-262144 -1 -1;
+#X obj 11 68 bng 15 250 50 0 open-modules! empty <--MODULES(esc) 17
+7 0 10 -262144 -1 -1;
+#X obj 11 108 bng 15 250 50 0 \$0-reset! empty <--RESET! 17 7 0 10
+-262144 -1 -1;
+#X obj 11 88 bng 15 250 50 0 SAVE-S SAVE-R <--SAVE!(enter) 17 7 0 10
+-262144 -4034 -1;
+#N canvas 392 117 718 398 patch-editor-do-not-delete 0;
 #X obj 89 6 key;
 #X obj 89 50 s SAVE-R;
 #X obj 89 28 sel 10;
@@ -127,7 +140,7 @@
 #X msg 177 60 0;
 #X msg 83 341 \; pd-_main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 1 256 0;
+-262144 -1 -1 0 256 0;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -235,7 +248,7 @@
 #X msg 177 60 0;
 #X msg 83 341 \; pd-_main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 3 256 0;
+-262144 -1 -1 1 256 0;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -397,7 +410,7 @@
 #X msg 177 60 0;
 #X msg 83 341 \; pd-_main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 0 256 0;
+-262144 -1 -1 1 256 0;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -995,7 +1008,7 @@
 #X msg 177 81 0;
 #X msg 83 341 \; pd-_main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 0 256 0;
+-262144 -1 -1 1 256 0;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -1211,7 +1224,7 @@
 #X msg 177 81 0;
 #X msg 83 341 \; pd-_main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 0 256 0;
+-262144 -1 -1 1 256 0;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -1321,7 +1334,7 @@
 #X msg 177 81 0;
 #X msg 83 341 \; pd-_main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 0 256 0;
+-262144 -1 -1 2 256 0;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -1537,7 +1550,7 @@
 #X msg 177 81 0;
 #X msg 83 341 \; pd-_main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 0 256 0;
+-262144 -1 -1 2 256 0;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -1645,7 +1658,7 @@
 #X msg 177 81 0;
 #X msg 83 341 \; pd-_main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 0 256 0;
+-262144 -1 -1 1 256 0;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -1917,7 +1930,7 @@
 #X msg 177 81 0;
 #X msg 83 341 \; pd-_main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 1 256 0;
+-262144 -1 -1 0 256 0;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -2133,7 +2146,7 @@
 #X msg 177 81 0;
 #X msg 83 341 \; pd-_main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 0 256 0;
+-262144 -1 -1 1 256 0;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -2187,7 +2200,7 @@
 #X msg 177 81 0;
 #X msg 83 341 \; pd-_main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 0 256 0;
+-262144 -1 -1 1 256 0;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -2405,7 +2418,7 @@
 #X msg 177 81 0;
 #X msg 83 341 \; pd-_main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 1 256 0;
+-262144 -1 -1 0 256 0;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -3216,7 +3229,7 @@
 #X msg 177 81 0;
 #X msg 83 341 \; pd-_main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 0 256 0;
+-262144 -1 -1 1 256 0;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -3270,7 +3283,7 @@
 #X msg 177 81 0;
 #X msg 83 341 \; pd-_main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 1 256 0;
+-262144 -1 -1 0 256 0;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -3431,7 +3444,7 @@ start from zero for a clearer view of the patch.;
 #X msg 38 178 1;
 #X obj 38 156 r open-signal-flow!;
 #X msg 38 203 \; pd-signal-flow vis \$1;
-#N canvas 523 44 852 691 signal-flow 0;
+#N canvas 11 22 852 668 signal-flow 0;
 #X obj 22 10 cnv 15 365 30 empty empty SIGNAL-FLOW 20 12 0 14 -226533
 -262144 0;
 #X obj 26 161 hsl 128 15 0 127 0 0 empty empty empty -2 -8 0 10 -158136
@@ -3644,7 +3657,7 @@ more elaborate pd-code for deeper control.;
 #X obj 204 151 r open-organelle-map!;
 #X msg 204 198 \; pd-organelle-map vis \$1;
 #X obj 203 272 r open-modules!;
-#N canvas 803 24 622 685 modules 0;
+#N canvas 660 22 618 657 modules 0;
 #X obj 203 81 cnv 15 180 15 empty empty MODULATION: 10 8 0 12 -158136
 -262144 0;
 #X obj 203 102 bng 15 250 50 0 \$0-create-basic-lfo! empty <--BASIC-LFO
@@ -4637,23 +4650,23 @@ for more details.;
 #X connect 13 0 12 0;
 #X connect 14 0 13 0;
 #X connect 18 0 5 0;
-#X restore 7 713 pd patch-editor-do-not-delete;
-#X text 19 676 DO NOT DELETE THESE OBJECTS:;
-#X obj 10 4 cnv 5 5 5 empty empty AUTOMATONISM 0 12 0 15 -262144 -66577
-0;
-#X obj 11 30 bng 15 250 50 0 open-quick-guide! empty <--QUICK-GUIDE
-17 7 0 10 -262144 -1 -1;
-#X obj 11 50 bng 15 250 50 0 open-manual! empty <--MANUAL 17 7 0 10
--262144 -1 -1;
-#X obj 11 68 bng 15 250 50 0 open-modules! empty <--MODULES(esc) 17
-7 0 10 -262144 -1 -1;
-#X obj 11 108 bng 15 250 50 0 \$0-reset! empty <--RESET! 17 7 0 10
--262144 -1 -1;
-#X obj 11 88 bng 15 250 50 0 SAVE-S SAVE-R <--SAVE!(enter) 17 7 0 10
--262144 -4034 -1;
-#X obj 391 612 dac~ 1 2;
-#X obj 391 574 *~ 0.1, f 11;
-#X obj 390 531 osc~ 440;
-#X connect 9 0 8 0;
-#X connect 9 0 8 1;
-#X connect 10 0 9 0;
+#X restore 10 769 pd patch-editor-do-not-delete;
+#X obj 334 205 basic-osc 1;
+#X obj 138 208 basic-lfo 2;
+#X obj 759 30 clock 1;
+#X obj 647 154 mega-sequencer 1;
+#X obj 334 382 lp-filter2 1;
+#X obj 535 422 ahr 1;
+#X obj 665 424 ahr 2;
+#X obj 336 526 vca 1;
+#X obj 335 639 maestro4 1;
+#X connect 8 0 12 0;
+#X connect 9 1 8 1;
+#X connect 10 0 11 0;
+#X connect 10 0 13 0;
+#X connect 10 0 14 0;
+#X connect 11 0 8 0;
+#X connect 12 0 15 0;
+#X connect 13 0 15 1;
+#X connect 14 0 12 2;
+#X connect 15 0 16 0;
