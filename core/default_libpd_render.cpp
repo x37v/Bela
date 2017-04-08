@@ -261,6 +261,8 @@ bool setup(BelaContext *context, void *userData)
 	//Add the current folder to the search path for externals
 	libpd_add_to_search_path(".");
 	libpd_add_to_search_path("../pd-externals");
+	libpd_add_to_search_path("../examples/08-PureData/automatonism/patch_editor_abs/");
+	libpd_add_to_search_path("patch_editor_abs/");
 
 	//TODO: ideally, we would analyse the ASCII of the patch file and find out which in/outs to use
 	libpd_init_audio(gChannelsInUse, gChannelsInUse, context->audioSampleRate);
